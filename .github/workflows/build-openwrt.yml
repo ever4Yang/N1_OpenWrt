@@ -8,8 +8,7 @@
 # Description: Build OpenWrt using GitHub Actions
 #
 
-name: Build OpenWrt
-
+name: Build openwrt-armvirt-64-default-rootfs 
 on:
   repository_dispatch:
   workflow_dispatch:

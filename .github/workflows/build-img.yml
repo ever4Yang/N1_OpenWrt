@@ -1,4 +1,4 @@
-name: Build img for N1
+name: Build img for N1 (base on openwrt_packit)
 
 on:
   repository_dispatch:
