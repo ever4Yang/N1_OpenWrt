@@ -61,7 +61,7 @@ jobs:
       run: |
         df -hT $PWD
         # git clone $REPO_URL -b $REPO_BRANCH openwrt
-        git clone -b $REPO_TAG  –single-branch $REPO_UR openwrt
+        git clone -b $REPO_TAG  $REPO_UR openwrt
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
         cd openwrt
         useVersionInfo=$(git show -s --date=short --format="Author: %an<br/>date: %cd<br/>commit: %s<br/>commit hash: %H")
