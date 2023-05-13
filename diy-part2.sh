@@ -43,3 +43,5 @@ git clone https://github.com/sbwml/luci-app-alist package/alist
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
+rm -rf feeds/packages/lang/golang
+svn export https://github.com/sbwml/packages_lang_golang/branches/19.x feeds/packages/lang/golang
