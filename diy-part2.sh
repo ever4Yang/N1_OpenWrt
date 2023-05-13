@@ -24,6 +24,8 @@
 #git clone https://github.com/jerrykuku/luci-app-jd-dailybonus.git package/luci-app-jd-dailybonus
 #git clone https://github.com/kongfl888/luci-app-adguardhome.git package/luci-app-adguardhome
 
+
+
 # Add 晶晨宝盒
 #svn co https://github.com/ophub/luci-app-amlogic/trunk/luci-app-amlogic package/luci-app-amlogic
 
@@ -33,8 +35,10 @@
 #pushd package/luci-app-openclash/tools/po2lmo
 #make && sudo make install
 #popd
-
-
+#nas-xunlei
+svn co https://github.com/gngpp/nas-xunlei/trunk/openwrt package/xunlei
+#alist
+git clone https://github.com/sbwml/luci-app-alist package/alist
 
 
 ./scripts/feeds update -a
