@@ -1,125 +1,49 @@
-name: Build img for openwrt_s905d_n1 (base on openwrt_packit)
+#========================================================================================================================
+# https://github.com/ophub/amlogic-s9xxx-openwrt
+# Description: Use Releases file to packaging
+# Cron: min (0 - 59) / hour (0 - 23) / day of month (1 - 31) / month (1 - 12) / day of week (0 - 6)(Sunday - Saturday)
+#========================================================================================================================
+
+name: 快速打包（自用）
 
 on:
   repository_dispatch:
   workflow_dispatch:
- 
-     
-env:
-  UPLOAD_COWTRANSFER: false
-  UPLOAD_WETRANSFER: true
-  RELEASE: true
-  TZ: Asia/Shanghai
 
 jobs:
   build:
     runs-on: ubuntu-20.04
-    name: Build for N1
-    strategy:
-      fail-fast: false
     
-
- 
     steps:
     - name: Checkout
-      uses: actions/checkout@main
-      
-    - name: Initialization environment
-      run: |     
-        version=$(curl -s "https://api.github.com/repos/freedyYang/N1_OpenWrt/releases/latest" | awk -F '"' '/tag_name/{print $4}')
-        
-        echo "version=$version"  >> $GITHUB_ENV
-        echo "DATE=$(date "+%Y-%m-%d %H:%M:%S")"  >> $GITHUB_ENV
-        
-        echo "version=$version"
-        ls 
-        pwd
-        mkdir freedy
-        sudo chmod  -R 777 freedy
-        ls
-        #cp -r ${FLIPPY_NAME}/opt/* /opt
-                
-    - name: Download
-      run: |
-        cd freedy
-        tag='ARMv8_ROOTFS'
-        
-        wget  https://github.com/freedyYang/N1_OpenWrt/releases/download/$tag/openwrt-armvirt-64-default-rootfs.tar.gz
-                
-    - name: Check Files
-      run: |
-        cd freedy
-        ls
-                
+      uses: actions/checkout@v2
 
+    - name: Get OpenWrt firmware
+      id: build
+      if: (!cancelled())
+      run: |
+        [ -d openwrt-armvirt ] || mkdir -p openwrt-armvirt
+        curl -s "https://api.github.com/repos/${GITHUB_REPOSITORY}/releases" | grep -o "openwrt_N1_.*/openwrt-armvirt-.*\.tar.gz" | head -n 1 > DOWNLOAD_ARMVIRT
+        [ -s DOWNLOAD_ARMVIRT ] && wget -q -P openwrt-armvirt https://github.com/${GITHUB_REPOSITORY}/releases/download/$(cat DOWNLOAD_ARMVIRT)
     
     - name: Package Armvirt as OpenWrt
-      id: package
       uses: unifreq/openwrt_packit@master
       env:
-        OPENWRT_ARMVIRT: freedy/openwrt-armvirt-64-default-rootfs.tar.gz   
+        WHOAMI: FreedyYang
+        OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
         PACKAGE_SOC: s905d
-        GZIP_IMGS: '.7z'
-        SELECT_PACKITPATH: 'freedy'
-        KERNEL_VERSION_NAME: 5.4.180 
-        #KERNEL_VERSION_NAME: 5.16.10_5.15.24_5.10.101_5.4.180 
-        
+       # KERNEL_AUTO_LATEST: false
+       # KERNEL_REPO_URL: https://github.com/quanjindeng/Actions_OpenWrt-Amlogic/tree/main/kernel
+       # KERNEL_REPO_URL: https://github.com/ophub/kernel/tree/main/pub/stable
+       # KERNEL_VERSION_NAME: 5.15.32_6.1.35
 
-        
-    - name: Upload firmware to WeTransfer
-      id: wetransfer
-      if:  env.PACKAGED_STATUS == 'success' && env.UPLOAD_WETRANSFER == 'true' && !cancelled()
-      run: |
-        FIRMWARE=${{ env.PACKAGED_OUTPUTPATH }}/*.7z
-        curl -fsSL git.io/file-transfer | sh        
-        ./transfer wet -s -p 16 --no-progress ${FIRMWARE} 2>&1 | tee wetransfer.log
-        echo "::warning file=wetransfer.com::$(cat wetransfer.log | grep https)"
-        echo "::set-output name=url::$(cat wetransfer.log | grep https | cut -f3 -d" ")"
-  
-    - name: Upload firmware to cowtransfer
-      id: cowtransfer
-      if: env.PACKAGED_STATUS == 'success' && env.UPLOAD_COWTRANSFER == 'true' && !cancelled()
-      run: |
-       FIRMWARE=${{ env.PACKAGED_OUTPUTPATH }}/*.7z
-        curl -fsSL git.io/file-transfer | sh
-        ./transfer cow --block 2621440 -s -p 64 --no-progress ${FIRMWARE} 2>&1 | tee cowtransfer.log
-        echo "::warning file=cowtransfer.com::$(cat cowtransfer.log | grep https)"
-        echo "::set-output name=url::$(cat cowtransfer.log | grep https | cut -f3 -d" ")"
-  
-  
-    - name: Create release
-      id: release
+    - name: Upload OpenWrt Firmware to Release
       uses: ncipollo/release-action@v1
       with:
-        tag: OpenWrt_N1-${{ env.PACKAGED_OUTPUTDATE }}
+        tag: openwrt_N1_${{ env.PACKAGED_OUTPUTDATE }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
-        allowUpdates: true        
-        token: ${{ secrets.RELEASES_TOKEN }}  
+        allowUpdates: true
+        token: ${{ secrets.RELEASES_TOKEN }}
         body: |
-          ## 以下为N1最新固件
-          默认IP：10.0.0.110 默认密码： password
-          Openwrt🚀(注:此版本为个人的精简版。+o版内核更稳定)
-          N1全新安装方法：
-             1. cd root
-             2. ./install-to-emmc.sh
-          N1在线升级方法：
-             1. cd /mnt/mmcblk2p4
-             2. wget 升级脚本链接,鼠标右击openwrt-update-amlogic
-             3. wget img.gz后缀名的固件链接,鼠标右击后缀.img.gz
-             4. gzip -d 解压缩上一步下载的固件全名
-             5. chmod +x openwrt-update-amlogic
-             6. ./openwrt-update-amlogic后，选择y是保留配置升级，选N相当于重装。
-             7.升级完成后系统会自动重启，稍安勿躁。
-       
-   
-    - name: Remove old Releases
-      uses: dev-drprasad/delete-older-releases@v0.2.0
-      with:
-        keep_latest: 2
-        delete_tags: true
-        delete_tag_pattern: 'OpenWrt_N1-'
-      env:
-        GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
-
-  
-  
+          自用固件，插件较少！
+          如有其他需求，建议下载全插件版本固件！

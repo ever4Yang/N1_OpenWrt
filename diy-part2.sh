@@ -33,7 +33,7 @@
 #pushd package/luci-app-openclash/tools/po2lmo
 #make && sudo make install
 #popd
-
+svn co https://github.com/gngpp/xunlei/tags/v3.5.2-5/openwrt ./package/xunlei
 
 
 
