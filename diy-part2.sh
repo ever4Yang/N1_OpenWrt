@@ -36,6 +36,10 @@
 svn co https://github.com/gngpp/xunlei/tags/v3.5.2-5/openwrt ./package/xunlei
 
 
+# 为alist插件更换最新的golang版本
+# rm -rf feeds/packages/lang/golang
+# svn export https://github.com/sbwml/packages_lang_golang/trunk feeds/packages/lang/golang
+rm -rf package/small-package/alist/patches/0
 
 ./scripts/feeds update -a
 ./scripts/feeds install -a
