@@ -40,6 +40,6 @@ svn co https://github.com/gngpp/xunlei/tags/v3.5.2-5/openwrt ./package/xunlei
 rm -rf feeds/packages/lang/golang
 git clone https://github.com/sbwml/packages_lang_golang -b 20.x feeds/packages/lang/golang
 #rm -rf package/small-package/alist/patches/0
-
-./scripts/feeds update -a
-./scripts/feeds install -a
+echo "test"
+#./scripts/feeds update -a
+#./scripts/feeds install -a
