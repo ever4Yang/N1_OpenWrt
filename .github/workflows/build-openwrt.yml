@@ -157,7 +157,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         tag: openwrt_N1_openwrt-armvirt
-        artifacts: openwrt-armvirt/*.tar.gz
+        artifacts: openwrt-armvirt/*
         allowUpdates: true
         token: ${{ secrets.RELEASES_TOKEN }}
         body: |
