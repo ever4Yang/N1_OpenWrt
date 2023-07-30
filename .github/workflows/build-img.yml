@@ -4,7 +4,7 @@
 # Cron: min (0 - 59) / hour (0 - 23) / day of month (1 - 31) / month (1 - 12) / day of week (0 - 6)(Sunday - Saturday)
 #========================================================================================================================
 
-name: 快速打包（自用）
+name: 打包
 
 on:
   repository_dispatch:
@@ -32,6 +32,7 @@ jobs:
         WHOAMI: FreedyYang
         OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
         PACKAGE_SOC: s905d
+        OPENWRT_VER: lede-r6025-b65b15a30
        # KERNEL_AUTO_LATEST: false
        # KERNEL_REPO_URL: https://github.com/quanjindeng/Actions_OpenWrt-Amlogic/tree/main/kernel
        # KERNEL_REPO_URL: https://github.com/ophub/kernel/tree/main/pub/stable
