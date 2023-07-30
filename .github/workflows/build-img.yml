@@ -32,7 +32,7 @@ jobs:
         WHOAMI: FreedyYang
         OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
         PACKAGE_SOC: s905d
-        DISTRIB_REVISION: lede-r6025-b65b15a30
+        OPENWRT_VER: lede-r6025-b65b15a30
         KERNEL_VERSION_NAME: 5.15.115
 
     - name: Upload OpenWrt Firmware to Release
