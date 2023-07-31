@@ -11,6 +11,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   REPO_TAG: 20230609
+  BUILD_MAIN: true
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -71,8 +72,14 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        #git clone $REPO_URL -b $REPO_BRANCH openwrt
+        if [$BUILD_MAIN]
+        then
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        else
         git clone -b $REPO_TAG  --depth 1 $REPO_URL   openwrt
+        fi
+        
+        
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 加载自定义feeds
