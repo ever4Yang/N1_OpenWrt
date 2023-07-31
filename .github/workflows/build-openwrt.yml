@@ -72,10 +72,12 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        if [$BUILD_MAIN]
+        if [ $BUILD_MAIN  == "true"]
         then
+        echo "checkout main"
         git clone $REPO_URL -b $REPO_BRANCH openwrt
         else
+        echo "checkout tag $REPO_TAG"
         git clone -b $REPO_TAG  --depth 1 $REPO_URL   openwrt
         fi
         
@@ -155,7 +157,7 @@ jobs:
     - name: 发布固件
       uses: ncipollo/release-action@v1
       with:
-        tag: openwrt_N1_openwrt-armvirt
+        tag: openwrt_N1_openwrt-dev
         artifacts: openwrt-armvirt/*
         allowUpdates: true
         token: ${{ secrets.RELEASES_TOKEN }}
@@ -179,6 +181,6 @@ jobs:
         keep_latest: 5
         #keep_latest: ${{ github.event.inputs.rele }}
         delete_tags: true
-        delete_tag_pattern: 'openwrt_N1_openwrt-armvirt'
+        delete_tag_pattern: 'openwrt_N1_openwrt-dev'
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASES_TOKEN }}
