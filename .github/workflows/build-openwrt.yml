@@ -150,7 +150,7 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/openwrt-armvirt/
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        ls -lah
+        ls -lah openwrt-armvirt
 
  
     - name: Upload bin directory
@@ -164,7 +164,7 @@ jobs:
       uses: ncipollo/release-action@v1
       with:
         tag: openwrt_N1_openwrt-dev
-        artifacts: openwrt-armvirt/armvirt/64/*,openwrt-armvirt/armvirt/64/packages/*
+        artifacts: openwrt-armvirt/armvirt/64/*
         allowUpdates: true
         token: ${{ secrets.RELEASES_TOKEN }}
         body: |
