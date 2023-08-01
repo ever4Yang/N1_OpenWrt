@@ -33,13 +33,13 @@ jobs:
         OPENWRT_ARMVIRT: openwrt-armvirt/*.tar.gz
         PACKAGE_SOC: s905d
         OPENWRT_VER: lede-r6025-b65b15a30
-        DISTRIB_REVISION: lede-r6025-b65b15a3
+      
         KERNEL_VERSION_NAME: 5.15.115
 
     - name: Upload OpenWrt Firmware to Release
       uses: ncipollo/release-action@v1
       with:
-        tag: openwrt_N1_${{ env.PACKAGED_OUTPUTDATE }}
+        tag: openwrt_N1_dev_${{ env.PACKAGED_OUTPUTDATE }}
         artifacts: ${{ env.PACKAGED_OUTPUTPATH }}/*
         allowUpdates: true
         token: ${{ secrets.RELEASES_TOKEN }}
