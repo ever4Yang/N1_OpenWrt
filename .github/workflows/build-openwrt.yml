@@ -150,15 +150,21 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/openwrt-armvirt/
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        ls 
+        ls -lah
 
-
+ 
+    - name: Upload bin directory
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' 
+      with:
+          name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: openwrt-armvirt
 
     - name: 发布固件
       uses: ncipollo/release-action@v1
       with:
         tag: openwrt_N1_openwrt-dev
-        artifacts: openwrt-armvirt/*
+        artifacts: openwrt-armvirt/armvirt/64/*,openwrt-armvirt/armvirt/64/packages/*
         allowUpdates: true
         token: ${{ secrets.RELEASES_TOKEN }}
         body: |
