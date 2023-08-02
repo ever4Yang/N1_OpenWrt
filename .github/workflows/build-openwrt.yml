@@ -11,6 +11,7 @@ env:
   REPO_URL: https://github.com/coolsnowwolf/lede
   REPO_BRANCH: master
   REPO_TAG: 20230609
+  BUILD_MAIN: true
   FEEDS_CONF: feeds.conf.default
   CONFIG_FILE: .config
   DIY_P1_SH: diy-part1.sh
@@ -71,8 +72,16 @@ jobs:
       working-directory: /workdir
       run: |
         df -hT $PWD
-        #git clone $REPO_URL -b $REPO_BRANCH openwrt
+        if [ $BUILD_MAIN  == "true" ]
+        then
+        echo "checkout main"
+        git clone $REPO_URL -b $REPO_BRANCH openwrt
+        else
+        echo "checkout tag $REPO_TAG"
         git clone -b $REPO_TAG  --depth 1 $REPO_URL   openwrt
+        fi
+        
+        
         ln -sf /workdir/openwrt $GITHUB_WORKSPACE/openwrt
 
     - name: 加载自定义feeds
@@ -122,7 +131,7 @@ jobs:
         echo "清理之前："
         df -hT
         mkdir openwrt-armvirt
-        mv openwrt/bin/targets/*/*/*.tar.gz openwrt-armvirt/
+        mv openwrt/bin/targets/* openwrt-armvirt/
         echo -e "\n"
         echo "列出空间占用前10的目录或文件："
         sudo du -h --max-depth=1 /workdir/openwrt |sort -nr | head -10
@@ -141,15 +150,21 @@ jobs:
       run: |
         cd $GITHUB_WORKSPACE/openwrt-armvirt/
         echo "FIRMWARE=$PWD" >> $GITHUB_ENV
-        ls 
+        ls -lah 
 
-
+ 
+    - name: Upload bin directory
+      uses: actions/upload-artifact@main
+      if: steps.compile.outputs.status == 'success' 
+      with:
+          name: OpenWrt_bin${{ env.DEVICE_NAME }}${{ env.FILE_DATE }}
+          path: openwrt-armvirt
 
     - name: 发布固件
       uses: ncipollo/release-action@v1
       with:
-        tag: openwrt_N1_openwrt-armvirt
-        artifacts: openwrt-armvirt/*
+        tag: openwrt_N1_openwrt-dev
+        artifacts: openwrt-armvirt/armvirt/64/*
         allowUpdates: true
         token: ${{ secrets.RELEASES_TOKEN }}
         body: |
@@ -172,6 +187,6 @@ jobs:
         keep_latest: 5
         #keep_latest: ${{ github.event.inputs.rele }}
         delete_tags: true
-        delete_tag_pattern: 'openwrt_N1_openwrt-armvirt'
+        delete_tag_pattern: 'openwrt_N1_openwrt-dev'
       env:
         GITHUB_TOKEN: ${{ secrets.RELEASES_TOKEN }}
